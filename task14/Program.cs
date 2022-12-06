@@ -46,59 +46,89 @@ void PrintArray(int[] arr, string beginRow, string separatorElems, string endRow
 
 int[,] RepeatedElementsMatrix(int[,] matrix)
 {
-    int[,] array = new int[matrix.GetLength(0), matrix.GetLength(1)];
-    for (int i = 0; i < matrix.GetLength(0); i++)
+    int rows = matrix.GetLength(0);
+    int columns = matrix.GetLength(1);
+    int[,] repeatedElemsMatrix = new int[rows, columns];
+    for (int i = 0; i < rows; i++)
     {
-        for (int j = 0; j < matrix.GetLength(1); j++)
+        for (int j = 0; j < columns; j++)
         {
-            for (int k = j + 1; k < matrix.GetLength(0); k++)
+            for (int k = j + 1; k < columns; k++)
             {
                 if (matrix[i, j] == matrix[i, k])
                 {
-                    array[i, j] = matrix[i, j];
-                    array[i, k] = matrix[i, j];
+                    repeatedElemsMatrix[i, j] = matrix[i, j];
+                    repeatedElemsMatrix[i, k] = matrix[i, j];
                 }
             }
         }
     }
-    return array;
+    return repeatedElemsMatrix;
 }
 
 int[,] CountRepeatedElements(int[,] matrix)
 {
-    int[,] elementsCount = new int[matrix.GetLength(0) * 2, 3];
-    int[] tempArray = new int[matrix.GetLength(1)];
+    int rows = matrix.GetLength(0);
+    int columns = matrix.GetLength(1);
+    matrix = RepeatedElementsMatrix(matrix);
     int index = 0;
-    int repeated = 1;
-    for (int i = 0; i < matrix.GetLength(0); i++)
+    for (int i = 0; i < rows; i++)
     {
+        bool repeated = false;
         int temp = 0;
-        for (int j = 0; j < matrix.GetLength(1); j++)
+        for (int j = 0; j < columns; j++)
         {
-            tempArray[j] = matrix[i, j];
-        }
-        for (int k = 0; k < tempArray.Length; k++)
-        {
-            if (tempArray[k] != temp && tempArray[k] != 0)
+            if (matrix[i, j] != temp && matrix[i, j] != 0)
             {
-                for (int s = 0; s < tempArray.Length; s++)
+                for (int s = 0; s < columns; s++)
                 {
-                    if (tempArray[k] == tempArray[s] && k > s)
-                        repeated = 1;
-                    if (tempArray[k] == tempArray[s] && k < s)
-                        repeated = 0;
-                }
-                if (repeated == 0)
-                {
-                    elementsCount[index, 0] = tempArray[k];
-                    elementsCount[index, 2] = i;
-                    for (int m = 0; m < tempArray.Length; m++)
+                    if (matrix[i, j] == matrix[i, s] && j > s)
                     {
-                        if (elementsCount[index, 0] == tempArray[m])
+                        repeated = true;
+                        break;
+                    }
+                    if (matrix[i, j] == matrix[i, s] && j < s)
+                        repeated = false;
+                }
+                if (repeated != true)
+                {
+                    index++;
+                    temp = matrix[i, j];
+                }
+            }
+        }
+    }
+    int[,] elementsCount = new int[index, 3];
+    index = 0;
+    for (int i = 0; i < rows; i++)
+    {
+        bool repeated = false;
+        int temp = 0;
+        for (int j = 0; j < columns; j++)
+        {
+            if (matrix[i, j] != temp && matrix[i, j] != 0)
+            {
+                for (int s = 0; s < columns; s++)
+                {
+                    if (matrix[i, j] == matrix[i, s] && j > s)
+                    {
+                        repeated = true;
+                        break;
+                    }
+                    if (matrix[i, j] == matrix[i, s] && j < s)
+                        repeated = false;
+                }
+                if (repeated != true)
+                {
+                    elementsCount[index, 0] = matrix[i, j];
+                    elementsCount[index, 2] = i;
+                    for (int m = 0; m < columns; m++)
+                    {
+                        if (elementsCount[index, 0] == matrix[i, m])
                             elementsCount[index, 1]++;
                     }
                     index++;
-                    temp = tempArray[k];
+                    temp = matrix[i, j];
                 }
             }
         }
@@ -113,9 +143,9 @@ void PrintMatrixSpecial(int[,] matrix, string beginRow, string afterFirstRow, st
         Console.Write(beginRow);
         for (int j = 0; j < matrix.GetLength(1); j++)
         {
-            if (j ==  0)
+            if (j == 0)
                 Console.Write($"{matrix[i, j],2}{afterFirstRow}");
-            else if (j ==  1)
+            else if (j == 1)
                 Console.Write($"{matrix[i, j],2}{afterSecondRow}");
             else Console.Write($"{matrix[i, j],2}");
         }
@@ -126,10 +156,10 @@ void PrintMatrixSpecial(int[,] matrix, string beginRow, string afterFirstRow, st
 int[,] matrix1 = CreateMatrixRndInt(5, 5, 1, 5);
 PrintMatrix(matrix1, "", "", "");
 
-int[,] repeatedElementsMatrix = RepeatedElementsMatrix(matrix1);
+// int[,] repeatedElementsMatrix = RepeatedElementsMatrix(matrix1);
 // Console.WriteLine();
 // PrintMatrix(repeatedElementsMatrix, "", "", "");
 
-int[,] countRepeatedElements = CountRepeatedElements(repeatedElementsMatrix);
+int[,] countRepeatedElements = CountRepeatedElements(matrix1);
 Console.WriteLine();
-PrintMatrixSpecial(countRepeatedElements, "Число "," повторяется ", " раза в ", "-ой строке");
+PrintMatrixSpecial(countRepeatedElements, "Число ", " повторяется ", " раза в ", "-ой строке");
